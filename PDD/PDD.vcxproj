@@ -132,10 +132,12 @@
   <ItemGroup>
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="PDD.cpp" />
+    <ClCompile Include="selfText.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="selfText.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

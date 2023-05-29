@@ -1,16 +1,17 @@
 ﻿#include"includes.h"
 #include"Object.h"
 #include<SFML/Audio/Music.hpp>
+#include"selfText.h"
 
 void mainMenu(RenderWindow& window, Music& music);
 void settings(RenderWindow& window, Music& music);
 int readVolumeFromFile();
 void writeVolumeToFile(int volume);
 void rules(RenderWindow& app, Music& music);
-void readCaptures(vector<Text>& captures);
-void showCaptures(RenderWindow& app, vector<Text>& captures, Vector2f& vec);
-bool isMouseOver(RenderWindow& window, Text text);
-void mergeCapture(vector<Text>& captures, string& temp, int x, int& y, int i);
+void readCaptures(vector<selfText>& captures);
+void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec);
+bool isMouseOver(RenderWindow& window, selfText text);
+void mergeCapture(vector<selfText>& captures, string& temp, int x, int& y, int i);
 void firstCapture(RenderWindow& app, Music& music);
 int main()
 {
@@ -177,7 +178,7 @@ void rules(RenderWindow& app, Music& music) {
     sf::Vector2f textPosition(10, 10);
     sf::Vector2f scrollPosition(0, 0);
     float scrollSpeed = 20.0f;
-    vector<Text> captures;
+    vector<selfText> captures;
     readCaptures(captures);
 
     float windowWidth = static_cast<float>(app.getSize().x);
@@ -197,22 +198,22 @@ void rules(RenderWindow& app, Music& music) {
                     if (event.mouseWheelScroll.delta < 0)
                     {
                         cout << "вниз " << endl;
-                        Text temp = captures[captures.size() - 1];
+                        Text temp = captures[captures.size() - 1].text;
                         if (temp.getPosition().y > 950) {
                             for (int i = 0; i < captures.size(); ++i) {
-                                Vector2f pos = captures[i].getPosition();
-                                captures[i].setPosition(*new Vector2f(pos.x, pos.y - 20));
+                                Vector2f pos = captures[i].text.getPosition();
+                                captures[i].text.setPosition(*new Vector2f(pos.x, pos.y - 35));
                             }
                         }
                     }
                     else if (event.mouseWheelScroll.delta > 0)
                     {
                         cout << "вверх " << endl;
-                        Text temp = captures[0];
+                        Text temp = captures[0].text;
                         if (temp.getPosition().y < 20) {
                             for (int i = 0; i < captures.size(); ++i) {
-                                Vector2f pos = captures[i].getPosition();
-                                captures[i].setPosition(*new Vector2f(pos.x, pos.y + 20));
+                                Vector2f pos = captures[i].text.getPosition();
+                                captures[i].text.setPosition(*new Vector2f(pos.x, pos.y + 35));
                             }
                         }
                     }
@@ -237,9 +238,11 @@ void rules(RenderWindow& app, Music& music) {
             if (homeButton.isMouseOver(app)) {
                 mainMenu(app, music);
             }
-            for (int i = 0; i < captures.size(); ++i) {
-                if (isMouseOver(app, captures[i])) {
-                    cout << "dsadsa";
+            else {
+                for (int i = 0; i < captures.size(); ++i) {
+                    if (isMouseOver(app, captures[i])) {
+                       
+                    }
                 }
             }
         }
@@ -254,23 +257,23 @@ void rules(RenderWindow& app, Music& music) {
 }
 
 
-void showCaptures(RenderWindow& app, vector<Text>& captures, Vector2f& vec) {
+void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec) {
     Font font;
     font.loadFromFile("src\\Gagalin-Regular.otf");
     for (int i = 0; i < captures.size(); ++i) {
 
-        captures[i].setFont(font);
+        captures[i].text.setFont(font);
         
 
         if (isMouseOver(app, captures[i])) {
-            Text temp(captures[i]);
+            Text temp(captures[i].text);
             temp.setScale(1.05f, 1.05f);
-            temp.setPosition(captures[i].getPosition().x - 2.f, captures[i].getPosition().y - 2.f);
+            temp.setPosition(captures[i].text.getPosition().x - 2.f, captures[i].text.getPosition().y - 2.f);
             temp.setFillColor(Color::Blue);
             if (i == 7 || i ==14 || i == 23 || i == 28 || i ==30) {
-                Text temp1(captures[i+1]);
+                Text temp1(captures[i+1].text);
                 temp1.setScale(1.05f, 1.05f);
-                temp1.setPosition(captures[i+1].getPosition().x - 2.f, captures[i+1].getPosition().y - 2.f);
+                temp1.setPosition(captures[i+1].text.getPosition().x - 2.f, captures[i+1].text.getPosition().y - 2.f);
                 temp1.setFillColor(Color::Blue);
                 app.draw(temp1);
                 i++;
@@ -280,23 +283,23 @@ void showCaptures(RenderWindow& app, vector<Text>& captures, Vector2f& vec) {
                 texture.loadFromFile("src\\bg\\bg3.jpg");
                 Sprite rect;
                 rect.setTexture(texture);
-                rect.setTextureRect(IntRect(captures[i - 1].getPosition().x, captures[i - 1].getPosition().y, captures[i - 1].getLocalBounds().width, captures[i - 1].getLocalBounds().height + 5));
-                rect.setPosition(captures[i - 1].getPosition());
+                rect.setTextureRect(IntRect(captures[i - 1].text.getPosition().x, captures[i - 1].text.getPosition().y, captures[i - 1].text.getLocalBounds().width, captures[i - 1].text.getLocalBounds().height + 5));
+                rect.setPosition(captures[i - 1].text.getPosition());
                 app.draw(rect);
-                Text temp1(captures[i - 1]);
+                Text temp1(captures[i - 1].text);
                 temp1.setScale(1.05f, 1.05f);
-                temp1.setPosition(captures[i - 1].getPosition().x - 2.f, captures[i - 1].getPosition().y - 2.f);
+                temp1.setPosition(captures[i - 1].text.getPosition().x - 2.f, captures[i - 1].text.getPosition().y - 2.f);
                 temp1.setFillColor(Color::Blue);
                 app.draw(temp1);
             }
             app.draw(temp);
         }
         else
-            app.draw(captures[i]);
+            app.draw(captures[i].text);
     }
 }
 
-void readCaptures(vector<Text>& captures) {
+void readCaptures(vector<selfText>& captures) {
     int x = 30;
     int y = 40;
     Font font;
@@ -336,7 +339,7 @@ void readCaptures(vector<Text>& captures) {
         textTemp.setFillColor(Color::Black);
         textTemp.setPosition(*new Vector2f(x, y));
         y += 35;
-        captures.push_back(textTemp);
+        captures.push_back(selfText(textTemp));
     }
     file.close();
 }
@@ -359,17 +362,18 @@ int readVolumeFromFile() {
     return temp;
 }
 
-bool isMouseOver(RenderWindow& window, Text text)
+bool isMouseOver(RenderWindow& window, selfText text)
 {
     Vector2i mousePos = Mouse::getPosition(window);
-    if (mousePos.x > text.getPosition().x && mousePos.x < text.getPosition().x + text.getLocalBounds().width + 3
-        && mousePos.y > text.getPosition().y && mousePos.y < text.getPosition().y + text.getLocalBounds().height + 3)
+
+    if (mousePos.x > text.text.getPosition().x && mousePos.x < text.text.getPosition().x + text.bounds.width + 3
+        && mousePos.y > text.text.getPosition().y && mousePos.y < text.text.getPosition().y + text.bounds.height + 3) 
         return true;
     else
         return false;
 }
 
-void mergeCapture(vector<Text>& captures, string& temp, int x, int& y, int i) {
+void mergeCapture(vector<selfText>& captures, string& temp, int x, int& y, int i) {
     int sizeFpart = 79;
     if (i == 13)
         sizeFpart = 75;
@@ -390,8 +394,8 @@ void mergeCapture(vector<Text>& captures, string& temp, int x, int& y, int i) {
     temp2.setFillColor(Color::Black);
     temp2.setPosition(*new Vector2f(x, y));
     y += 35;
-    captures.push_back(temp1);
-    captures.push_back(temp2);
+    captures.push_back(selfText(temp1));
+    captures.push_back(selfText(temp2));
 }
 
 void firstCapture(RenderWindow& app, Music& music) {
