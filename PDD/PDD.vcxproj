@@ -130,11 +130,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="image.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="PDD.cpp" />
     <ClCompile Include="selfText.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="image.h" />
     <ClInclude Include="includes.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="selfText.h" />

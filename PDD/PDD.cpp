@@ -2,7 +2,7 @@
 #include"Object.h"
 #include<SFML/Audio/Music.hpp>
 #include"selfText.h"
-
+#include"image.h"
 void mainMenu(RenderWindow& window, Music& music);
 void settings(RenderWindow& window, Music& music);
 int readVolumeFromFile();
@@ -12,7 +12,7 @@ void readCaptures(vector<selfText>& captures);
 void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec);
 bool isMouseOver(RenderWindow& window, selfText text);
 void mergeCapture(vector<selfText>& captures, string& temp, int x, int& y, int i);
-void firstCapture(RenderWindow& app, Music& music);
+void showCapture(RenderWindow& window, Music& music, int captureNum);
 int main()
 {
     setlocale(LC_ALL, "ru");
@@ -226,7 +226,10 @@ void rules(RenderWindow& app, Music& music) {
 
         Object homeButton = *new Object("src\\buttons\\home.png", *new Vector2f(900, 20));
 
+
         app.clear();
+        app.draw(bg.sprite);
+        app.draw(homeButton.sprite);
 
         if (homeButton.isMouseOver(app)) {
             Vector2f tempPos = homeButton.sprite.getPosition();
@@ -241,7 +244,7 @@ void rules(RenderWindow& app, Music& music) {
             else {
                 for (int i = 0; i < captures.size(); ++i) {
                     if (isMouseOver(app, captures[i])) {
-                       
+                        showCapture(app, music, i);
                     }
                 }
             }
@@ -249,8 +252,7 @@ void rules(RenderWindow& app, Music& music) {
 
 
 
-        app.draw(bg.sprite);
-        app.draw(homeButton.sprite);
+        
         showCaptures(app, captures, *new Vector2f(windowWidth, windowHeight));
         app.display();
     }
@@ -398,11 +400,79 @@ void mergeCapture(vector<selfText>& captures, string& temp, int x, int& y, int i
     captures.push_back(selfText(temp2));
 }
 
-void firstCapture(RenderWindow& app, Music& music) {
-    Texture texture;
-    texture.loadFromFile("src\\try.png");
-    Sprite sprite;
-    sprite.setTexture(texture);
-    sprite.setPosition(0.f, 0.f);
-    app.draw(sprite);
+void showCapture(RenderWindow& window, Music& music, int captureNum) {
+
+    Object bg = *new Object("src\\bg\\bg3.jpg", *new Vector2f(0, 0));
+    
+    vector<image> rulesPic;
+    fillVector(captureNum, rulesPic);
+
+
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+
+            if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+            {
+                if (event.mouseWheelScroll.delta < 0)
+                {
+                    cout << "вниз " << endl;
+                    if (rulesPic[rulesPic.size() - 1].sprite.getPosition().y + rulesPic[rulesPic.size() - 1].sprite.getLocalBounds().height > 980) {
+                        for (int i = 0; i < rulesPic.size(); ++i) {
+                            Vector2f pos = rulesPic[i].sprite.getPosition();
+                            rulesPic[i].sprite.setPosition(*new Vector2f(pos.x, pos.y-20));
+                        }
+                    }
+                }
+                else if (event.mouseWheelScroll.delta > 0)
+                {
+                    cout << "вверх " << endl;
+                    if (rulesPic[0].sprite.getPosition().y < 20) {
+                        for (int i = 0; i < rulesPic.size(); ++i) {
+                            Vector2f pos = rulesPic[i].sprite.getPosition();
+                            rulesPic[i].sprite.setPosition(*new Vector2f(pos.x, pos.y + 20));
+                        }
+                    }
+                    
+                }
+            }
+        }
+
+        Object homeButton = *new Object("src\\buttons\\home.png", *new Vector2f(900, 20));
+        
+      
+
+        window.clear();
+
+
+        if (homeButton.isMouseOver(window)) {
+            Vector2f tempPos = homeButton.sprite.getPosition();
+            homeButton.sprite.setScale(*new Vector2f(1.05, 1.05));
+            homeButton.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
+        }
+
+        if (Mouse::isButtonPressed(Mouse::Left)) {
+            if (homeButton.isMouseOver(window)) {
+                mainMenu(window, music);
+            }
+        }
+
+        window.draw(bg.sprite);
+
+        for (int i = 0; i < rulesPic.size(); ++i) {
+            window.draw(rulesPic[i].sprite);
+        }
+
+       
+        window.draw(homeButton.sprite);
+      
+
+
+        window.display();
+    }
 }
