@@ -14,6 +14,7 @@ bool isMouseOver(RenderWindow& window, selfText text);
 void mergeCapture(vector<selfText>& captures, string& temp, int x, int& y, int i);
 void showCapture(RenderWindow& window, Music& music, int captureNum, int type);
 void signs(RenderWindow& app, Music& music);
+void markup(RenderWindow& app, Music& music);
 
 
 
@@ -119,8 +120,8 @@ void mainMenu(RenderWindow& app, Music& music) {
             else if (buttonSigns.isMouseOver(app)) {
                 signs(app, music);
             }
-            else if (buttonSigns.isMouseOver(app)) {
-
+            else if (buttonMarkup.isMouseOver(app)) {
+                markup(app, music);
             }
             else if (buttonSettings.isMouseOver(app)) {
                 settings(app, music);
@@ -230,16 +231,17 @@ void rules(RenderWindow& app, Music& music) {
 
         Object homeButton = *new Object("src\\buttons\\home.png", *new Vector2f(900, 20));
 
-
         app.clear();
         app.draw(bg.sprite);
-        app.draw(homeButton.sprite);
+
 
         if (homeButton.isMouseOver(app)) {
             Vector2f tempPos = homeButton.sprite.getPosition();
             homeButton.sprite.setScale(*new Vector2f(1.05, 1.05));
             homeButton.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
         }
+
+        app.draw(homeButton.sprite);
 
         if (Mouse::isButtonPressed(Mouse::Left)) {
             if (homeButton.isMouseOver(app)) {
@@ -349,6 +351,7 @@ void signs(RenderWindow& app, Music& music) {
 
 
 void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec, int type) {
+
     Font font;
     font.loadFromFile("src\\Gagalin-Regular.otf");
     for (int i = 0; i < captures.size(); ++i) {
@@ -394,6 +397,9 @@ void readCaptures(vector<selfText>& captures, int type) {
     int size = 27;
     if (type == 1)
         size = 8;
+    else if (type == 2) {
+        size = 3;
+    }
     int x = 30;
     int y = 40;
     Font font;
@@ -404,6 +410,9 @@ void readCaptures(vector<selfText>& captures, int type) {
         file.open("captures.txt");
     else if (type == 1)
         file.open("rulesParagraphs.txt");
+    else if (type == 2) {
+        file.open("markup.txt");
+    }
     for (int i = 0; i < size; ++i) {
         string temp;
         getline(file, temp);
@@ -504,7 +513,6 @@ void showCapture(RenderWindow& window, Music& music, int captureNum, int type) {
     vector<image> rulesPic;
     fillVector(captureNum, rulesPic, type);
 
-
     while (window.isOpen())
     {
         sf::Event event;
@@ -535,16 +543,18 @@ void showCapture(RenderWindow& window, Music& music, int captureNum, int type) {
                             rulesPic[i].sprite.setPosition(*new Vector2f(pos.x, pos.y + 20));
                         }
                     }
-                    
+                    cout << "dsadsa";
                 }
             }
         }
 
-        Object homeButton = *new Object("src\\buttons\\home.png", *new Vector2f(900, 20));
-        
-      
 
         window.clear();
+
+        Object homeButton = *new Object("src\\buttons\\home.png", *new Vector2f(900, 20));
+        Object backButton = *new Object("src\\buttons\\arrowBack.png", *new Vector2f(900, 100));
+
+        window.draw(bg.sprite);
 
 
         if (homeButton.isMouseOver(window)) {
@@ -552,26 +562,125 @@ void showCapture(RenderWindow& window, Music& music, int captureNum, int type) {
             homeButton.sprite.setScale(*new Vector2f(1.05, 1.05));
             homeButton.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
         }
+        else if (backButton.isMouseOver(window)) {
+            Vector2f tempPos = backButton.sprite.getPosition();
+            backButton.sprite.setScale(*new Vector2f(1.05, 1.05));
+            backButton.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
+        }
+
 
         if (Mouse::isButtonPressed(Mouse::Left)) {
             if (homeButton.isMouseOver(window)) {
                 mainMenu(window, music);
             }
+            else if (backButton.isMouseOver(window)) {
+                if (type == 0) {
+                    rules(window, music);
+                }
+                else if (type == 1) {
+                    signs(window, music);
+                }
+                else if (type == 2) {
+                    markup(window, music);
+                }
+            }
         }
 
-        window.draw(bg.sprite);
+
 
         for (int i = 0; i < rulesPic.size(); ++i) {
             window.draw(rulesPic[i].sprite);
         }
-
-       
         window.draw(homeButton.sprite);
-      
-
+        window.draw(backButton.sprite);
+  
 
         window.display();
     }
 }
 
+void markup(RenderWindow& app, Music& music) {
+    Object bg = *new Object("src\\bg\\bg3.jpg", *new Vector2f(0, 0));
+    sf::Vector2f textPosition(10, 10);
+    sf::Vector2f scrollPosition(0, 0);
+    float scrollSpeed = 20.0f;
+    vector<selfText> captures;
+    readCaptures(captures, 2);
 
+    float windowWidth = static_cast<float>(app.getSize().x);
+    float windowHeight = static_cast<float>(app.getSize().y);
+
+    while (app.isOpen())
+    {
+        sf::Event event;
+        while (app.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                app.close();
+            else if (event.type == sf::Event::MouseWheelScrolled)
+            {
+                if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+                {
+                    if (event.mouseWheelScroll.delta < 0)
+                    {
+                        cout << "вниз " << endl;
+                        Text temp = captures[captures.size() - 1].text;
+                        if (temp.getPosition().y > 950) {
+                            for (int i = 0; i < captures.size(); ++i) {
+                                Vector2f pos = captures[i].text.getPosition();
+                                captures[i].text.setPosition(*new Vector2f(pos.x, pos.y - 35));
+                            }
+                        }
+                    }
+                    else if (event.mouseWheelScroll.delta > 0)
+                    {
+                        cout << "вверх " << endl;
+                        Text temp = captures[0].text;
+                        if (temp.getPosition().y < 20) {
+                            for (int i = 0; i < captures.size(); ++i) {
+                                Vector2f pos = captures[i].text.getPosition();
+                                captures[i].text.setPosition(*new Vector2f(pos.x, pos.y + 35));
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+
+        Object homeButton = *new Object("src\\buttons\\home.png", *new Vector2f(900, 20));
+
+
+        app.clear();
+        app.draw(bg.sprite);
+        
+
+        if (homeButton.isMouseOver(app)) {
+            Vector2f tempPos = homeButton.sprite.getPosition();
+            homeButton.sprite.setScale(*new Vector2f(1.05, 1.05));
+            homeButton.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
+        }
+        app.draw(homeButton.sprite);
+
+        if (Mouse::isButtonPressed(Mouse::Left)) {
+            if (homeButton.isMouseOver(app)) {
+                mainMenu(app, music);
+            }
+            else {
+                for (int i = 0; i < captures.size(); ++i) {
+                    if (isMouseOver(app, captures[i])) {
+                        showCapture(app, music, i, 2);
+                    }
+                }
+            }
+        }
+
+         
+
+
+        showCaptures(app, captures, *new Vector2f(windowWidth, windowHeight), 2);
+        app.display();
+    }
+}

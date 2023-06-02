@@ -17,6 +17,9 @@ image::image(int captureNum, int picNum, Vector2f pos, int type)
 	else if ((type == 1 && !this->img.loadFromFile("src\\signs\\" + to_string(captureNum) + "\\" + to_string(picNum) + ".png"))) {
 		exit(-1);
 	}
+	else if ((type == 2 && !this->img.loadFromFile("src\\markup\\" + to_string(captureNum) + "\\" + to_string(picNum) + ".png"))) {
+		exit(-1);
+	}
 	this->texture = Texture();
 	this->texture.loadFromImage(this->img);
 	this->sprite = Sprite();
@@ -73,40 +76,51 @@ void fillVector(int captureNum, vector<image>& vec, int type)
 	}
 	else if (type == 1) {
 		int y = 20;
-		for (int i = 0; i < 8; ++i) {
-			if (captureNum == 1)
-				vec.push_back(*new image(captureNum, 1, *new Vector2f(40, y), 1));
-			else if (captureNum == 2 || captureNum == 4) {
-				for (int i = 1; i <= 6; ++i) {
-					vec.push_back(*new image(captureNum, 1, *new Vector2f(40, y), 1));
-					y += 1308;
-				}
-			}
-			else if (captureNum == 3) {
-				for (int i = 1; i <= 6; ++i) {
-					vec.push_back(*new image(captureNum, 1, *new Vector2f(40, y), 1));
-					y += 1308;
-				}
-			}
-			else if (captureNum == 5 || captureNum == 7) {
-				for (int i = 1; i <= 3; ++i) {
-					vec.push_back(*new image(captureNum, 1, *new Vector2f(40, y), 1));
-					y += 1308;
-				}
-			}
-			else if (captureNum == 6) {
-				for (int i = 1; i <= 10; ++i) {
-					vec.push_back(*new image(captureNum, 1, *new Vector2f(40, y), 1));
-					y += 1308;
-				}
-			}
-			else if (captureNum == 8) {
-				for (int i = 1; i <= 4; ++i) {
-					vec.push_back(*new image(captureNum, 1, *new Vector2f(40, y), 1));
-					y += 1308;
-				}
+		++captureNum;
+		if (captureNum == 1)
+			vec.push_back(*new image(captureNum, 1, *new Vector2f(40, y), 1));
+		else if (captureNum == 2 || captureNum == 4) {
+			for (int i = 1; i <= 6; ++i) {
+				vec.push_back(*new image(captureNum, i, *new Vector2f(40, y), 1));
+				y += 1308;
 			}
 		}
+		else if (captureNum == 3) {
+			for (int i = 1; i <= 2; ++i) {
+				vec.push_back(*new image(captureNum, i, *new Vector2f(40, y), 1));
+				y += 1308;
+			}
+		}
+		else if (captureNum == 5 || captureNum == 7) {
+			for (int i = 1; i <= 3; ++i) {
+				vec.push_back(*new image(captureNum, i, *new Vector2f(40, y), 1));
+				y += 1308;
+			}
+		}
+		else if (captureNum == 6) {
+			for (int i = 1; i <= 10; ++i) {
+				vec.push_back(*new image(captureNum, i, *new Vector2f(40, y), 1));
+				y += 1308;
+			}
+		}
+		else if (captureNum == 8) {
+			for (int i = 1; i <= 4; ++i) {
+				vec.push_back(*new image(captureNum, i, *new Vector2f(40, y), 1));
+				y += 1308;
+			}
+		}
+	}
+	else if (type == 2) {
+		int y = 20;
+		++captureNum;
+		if (captureNum == 1 || captureNum == 3)
+			vec.push_back(*new image(captureNum, 1, *new Vector2f(40, y), 2));
+		else if (captureNum == 2)
+			for (int i = 1; i <= 10; ++i) {
+				vec.push_back(*new image(captureNum, i, *new Vector2f(40, y), 2));
+				y += 1308;
+			}
+		
 	}
 
 }
