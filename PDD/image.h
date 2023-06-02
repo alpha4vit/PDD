@@ -7,8 +7,8 @@ public:
 	Texture texture;
 	Sprite sprite;
 
-	image(int captureNum, int picNum, Vector2f pos);
+	image(int captureNum, int picNum, Vector2f pos, int type);
 	void setPosition(Vector2f pos);
 };
 
-void fillVector(int captureNum, vector<image>& vec);
+void fillVector(int captureNum, vector<image>& vec, int type);

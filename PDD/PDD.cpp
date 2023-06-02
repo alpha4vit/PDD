@@ -8,11 +8,15 @@ void settings(RenderWindow& window, Music& music);
 int readVolumeFromFile();
 void writeVolumeToFile(int volume);
 void rules(RenderWindow& app, Music& music);
-void readCaptures(vector<selfText>& captures);
-void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec);
+void readCaptures(vector<selfText>& captures, int type);
+void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec, int type);
 bool isMouseOver(RenderWindow& window, selfText text);
 void mergeCapture(vector<selfText>& captures, string& temp, int x, int& y, int i);
-void showCapture(RenderWindow& window, Music& music, int captureNum);
+void showCapture(RenderWindow& window, Music& music, int captureNum, int type);
+void signs(RenderWindow& app, Music& music);
+
+
+
 int main()
 {
     setlocale(LC_ALL, "ru");
@@ -113,7 +117,7 @@ void mainMenu(RenderWindow& app, Music& music) {
 
             }
             else if (buttonSigns.isMouseOver(app)) {
-
+                signs(app, music);
             }
             else if (buttonSigns.isMouseOver(app)) {
 
@@ -179,7 +183,7 @@ void rules(RenderWindow& app, Music& music) {
     sf::Vector2f scrollPosition(0, 0);
     float scrollSpeed = 20.0f;
     vector<selfText> captures;
-    readCaptures(captures);
+    readCaptures(captures, 0);
 
     float windowWidth = static_cast<float>(app.getSize().x);
     float windowHeight = static_cast<float>(app.getSize().y);
@@ -244,7 +248,7 @@ void rules(RenderWindow& app, Music& music) {
             else {
                 for (int i = 0; i < captures.size(); ++i) {
                     if (isMouseOver(app, captures[i])) {
-                        showCapture(app, music, i);
+                        showCapture(app, music, i, 0);
                     }
                 }
             }
@@ -253,13 +257,98 @@ void rules(RenderWindow& app, Music& music) {
 
 
         
-        showCaptures(app, captures, *new Vector2f(windowWidth, windowHeight));
+        showCaptures(app, captures, *new Vector2f(windowWidth, windowHeight), 0);
+        app.display();
+    }
+}
+
+void signs(RenderWindow& app, Music& music) {
+    Object bg = *new Object("src\\bg\\bg3.jpg", *new Vector2f(0, 0));
+    sf::Vector2f textPosition(10, 10);
+    sf::Vector2f scrollPosition(0, 0);
+    float scrollSpeed = 20.0f;
+    vector<selfText> captures;
+    readCaptures(captures, 1);
+
+    float windowWidth = static_cast<float>(app.getSize().x);
+    float windowHeight = static_cast<float>(app.getSize().y);
+
+    while (app.isOpen())
+    {
+        sf::Event event;
+        while (app.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                app.close();
+            else if (event.type == sf::Event::MouseWheelScrolled)
+            {
+                if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+                {
+                    if (event.mouseWheelScroll.delta < 0)
+                    {
+                        cout << "вниз " << endl;
+                        Text temp = captures[captures.size() - 1].text;
+                        if (temp.getPosition().y > 950) {
+                            for (int i = 0; i < captures.size(); ++i) {
+                                Vector2f pos = captures[i].text.getPosition();
+                                captures[i].text.setPosition(*new Vector2f(pos.x, pos.y - 35));
+                            }
+                        }
+                    }
+                    else if (event.mouseWheelScroll.delta > 0)
+                    {
+                        cout << "вверх " << endl;
+                        Text temp = captures[0].text;
+                        if (temp.getPosition().y < 20) {
+                            for (int i = 0; i < captures.size(); ++i) {
+                                Vector2f pos = captures[i].text.getPosition();
+                                captures[i].text.setPosition(*new Vector2f(pos.x, pos.y + 35));
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+
+        Object homeButton = *new Object("src\\buttons\\home.png", *new Vector2f(900, 20));
+
+
+        app.clear();
+        app.draw(bg.sprite);
+        app.draw(homeButton.sprite);
+
+        if (homeButton.isMouseOver(app)) {
+            Vector2f tempPos = homeButton.sprite.getPosition();
+            homeButton.sprite.setScale(*new Vector2f(1.05, 1.05));
+            homeButton.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
+        }
+
+        if (Mouse::isButtonPressed(Mouse::Left)) {
+            if (homeButton.isMouseOver(app)) {
+                mainMenu(app, music);
+            }
+            else {
+                for (int i = 0; i < captures.size(); ++i) {
+                    if (isMouseOver(app, captures[i])) {
+                        showCapture(app, music, i, 1);
+                    }
+                }
+            }
+        }
+
+
+
+
+        showCaptures(app, captures, *new Vector2f(windowWidth, windowHeight), 1);
         app.display();
     }
 }
 
 
-void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec) {
+void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec, int type) {
     Font font;
     font.loadFromFile("src\\Gagalin-Regular.otf");
     for (int i = 0; i < captures.size(); ++i) {
@@ -272,7 +361,7 @@ void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec) 
             temp.setScale(1.05f, 1.05f);
             temp.setPosition(captures[i].text.getPosition().x - 2.f, captures[i].text.getPosition().y - 2.f);
             temp.setFillColor(Color::Blue);
-            if (i == 7 || i ==14 || i == 23 || i == 28 || i ==30) {
+            if (type != 1 && i == 7 || i ==14 || i == 23 || i == 28 || i ==30) {
                 Text temp1(captures[i+1].text);
                 temp1.setScale(1.05f, 1.05f);
                 temp1.setPosition(captures[i+1].text.getPosition().x - 2.f, captures[i+1].text.getPosition().y - 2.f);
@@ -280,7 +369,7 @@ void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec) 
                 app.draw(temp1);
                 i++;
             }
-            else if (i == 8 || i ==15 || i == 24 || i == 29 || i == 31) {
+            else if (type != 1 && i == 8 || i ==15 || i == 24 || i == 29 || i == 31) {
                 Texture texture;
                 texture.loadFromFile("src\\bg\\bg3.jpg");
                 Sprite rect;
@@ -301,41 +390,49 @@ void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec) 
     }
 }
 
-void readCaptures(vector<selfText>& captures) {
+void readCaptures(vector<selfText>& captures, int type) {
+    int size = 27;
+    if (type == 1)
+        size = 8;
     int x = 30;
     int y = 40;
     Font font;
     font.loadFromFile("src\\Gagalin-Regular.otf");
     fstream file;
     file.imbue(std::locale(""));
-    file.open("captures.txt");
-    for (int i = 0; i < 27; ++i) {
+    if (type == 0)
+        file.open("captures.txt");
+    else if (type == 1)
+        file.open("rulesParagraphs.txt");
+    for (int i = 0; i < size; ++i) {
         string temp;
         getline(file, temp);
-        switch (i)
-        {
-        case 7: {
-            mergeCapture(captures, temp, x, y, i);
-            continue; break;
-        }
-        case 13: {
-            mergeCapture(captures, temp, x, y, i);
-            continue; break;
-        }
-        case 21: {
-            mergeCapture(captures, temp, x, y, i);
-            continue; break;
-        }
-        case 25: {
-            mergeCapture(captures, temp, x, y, i);
-            continue; break;
-        }
-        case 26: {
-            mergeCapture(captures, temp, x, y, i);
-            continue; break;
-        }
-        default:
-            break;
+        if (type == 0) {
+            switch (i)
+            {
+            case 7: {
+                mergeCapture(captures, temp, x, y, i);
+                continue; break;
+            }
+            case 13: {
+                mergeCapture(captures, temp, x, y, i);
+                continue; break;
+            }
+            case 21: {
+                mergeCapture(captures, temp, x, y, i);
+                continue; break;
+            }
+            case 25: {
+                mergeCapture(captures, temp, x, y, i);
+                continue; break;
+            }
+            case 26: {
+                mergeCapture(captures, temp, x, y, i);
+                continue; break;
+            }
+            default:
+                break;
+            }
         }
         Text textTemp(sf::String::fromUtf8(temp.begin(), temp.end()), font, 22);
         textTemp.setFillColor(Color::Black);
@@ -395,17 +492,17 @@ void mergeCapture(vector<selfText>& captures, string& temp, int x, int& y, int i
     Text temp2(sf::String::fromUtf8(temp.begin(), temp.end()).substring(sizeFpart), font, 22);
     temp2.setFillColor(Color::Black);
     temp2.setPosition(*new Vector2f(x, y));
-    y += 35;
+    y += 35; 
     captures.push_back(selfText(temp1));
     captures.push_back(selfText(temp2));
 }
 
-void showCapture(RenderWindow& window, Music& music, int captureNum) {
+void showCapture(RenderWindow& window, Music& music, int captureNum, int type) {
 
     Object bg = *new Object("src\\bg\\bg3.jpg", *new Vector2f(0, 0));
     
     vector<image> rulesPic;
-    fillVector(captureNum, rulesPic);
+    fillVector(captureNum, rulesPic, type);
 
 
     while (window.isOpen())
@@ -476,3 +573,5 @@ void showCapture(RenderWindow& window, Music& music, int captureNum) {
         window.display();
     }
 }
+
+
