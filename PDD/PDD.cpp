@@ -3,6 +3,7 @@
 #include<SFML/Audio/Music.hpp>
 #include"selfText.h"
 #include"image.h"
+#include"test.h"
 void mainMenu(RenderWindow& window, Music& music);
 void settings(RenderWindow& window, Music& music);
 int readVolumeFromFile();
@@ -15,6 +16,8 @@ void mergeCapture(vector<selfText>& captures, string& temp, int x, int& y, int i
 void showCapture(RenderWindow& window, Music& music, int captureNum, int type);
 void signs(RenderWindow& app, Music& music);
 void markup(RenderWindow& app, Music& music);
+void tests(RenderWindow& app, Music& music);
+void getNumTests(vector<test>& tests);
 
 
 
@@ -115,7 +118,7 @@ void mainMenu(RenderWindow& app, Music& music) {
                 rules(app, music);
             }
             else if (buttonTest.isMouseOver(app)) {
-
+                tests(app, music);
             }
             else if (buttonSigns.isMouseOver(app)) {
                 signs(app, music);
@@ -364,7 +367,7 @@ void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec, 
             temp.setScale(1.05f, 1.05f);
             temp.setPosition(captures[i].text.getPosition().x - 2.f, captures[i].text.getPosition().y - 2.f);
             temp.setFillColor(Color::Blue);
-            if (type != 1 && i == 7 || i ==14 || i == 23 || i == 28 || i ==30) {
+            if (type ==0 && i == 7 || i ==14 || i == 23 || i == 28 || i ==30) {
                 Text temp1(captures[i+1].text);
                 temp1.setScale(1.05f, 1.05f);
                 temp1.setPosition(captures[i+1].text.getPosition().x - 2.f, captures[i+1].text.getPosition().y - 2.f);
@@ -372,7 +375,7 @@ void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec, 
                 app.draw(temp1);
                 i++;
             }
-            else if (type != 1 && i == 8 || i ==15 || i == 24 || i == 29 || i == 31) {
+            else if (type ==0 && i == 8 || i ==15 || i == 24 || i == 29 || i == 31) {
                 Texture texture;
                 texture.loadFromFile("src\\bg\\bg3.jpg");
                 Sprite rect;
@@ -677,10 +680,101 @@ void markup(RenderWindow& app, Music& music) {
             }
         }
 
-         
-
 
         showCaptures(app, captures, *new Vector2f(windowWidth, windowHeight), 2);
         app.display();
+    }
+}
+
+
+void tests(RenderWindow& app, Music& music) {
+    Object bg = *new Object("src\\bg\\bg3.jpg", *new Vector2f(0, 0));
+    sf::Vector2f textPosition(10, 10);
+    sf::Vector2f scrollPosition(0, 0);
+    float scrollSpeed = 20.0f;
+    vector<test> tests;
+    getNumTests(tests);
+
+    float windowWidth = static_cast<float>(app.getSize().x);
+    float windowHeight = static_cast<float>(app.getSize().y);
+    int index = 0;
+
+
+    while (app.isOpen())
+    {
+        sf::Event event;
+        while (app.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                app.close();
+            else if (event.type == sf::Event::MouseWheelScrolled)
+            {
+                if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+                {
+                    if (event.mouseWheelScroll.delta < 0)
+                    {
+                        cout << "вниз " << endl;
+                        
+                    }
+                    else if (event.mouseWheelScroll.delta > 0)
+                    {
+                        cout << "вверх " << endl;
+                        
+                    }
+                }
+            }
+
+        }
+
+
+
+        Object homeButton = *new Object("src\\buttons\\home.png", *new Vector2f(900, 20));
+
+
+        app.clear();
+        app.draw(bg.sprite);
+
+
+        if (homeButton.isMouseOver(app)) {
+            Vector2f tempPos = homeButton.sprite.getPosition();
+            homeButton.sprite.setScale(*new Vector2f(1.05, 1.05));
+            homeButton.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
+        }
+        app.draw(homeButton.sprite);
+
+        if (Mouse::isButtonPressed(Mouse::Left)) {
+            if (homeButton.isMouseOver(app)) {
+                mainMenu(app, music);
+            }
+        }
+
+        app.draw(tests[index].task.sprite);
+        showCaptures(app, tests[index].answers, *new Vector2f(100, 500), 3);
+        if (Keyboard::isKeyPressed(Keyboard::Right) && index<10) {
+            ++index;
+        }
+        
+        app.display();
+    }
+}
+
+
+void getNumTests(vector<test>& tests) {
+    srand(time(NULL));
+    vector<int> nums;
+    bool fl = false;
+    for (int i = 0; i < 10; ++i) {
+        int temp = 1 + rand() % 14;
+        for (int j = 0; j < nums.size(); ++j) {
+            if (nums[j] == temp) {
+                fl = true; break;
+            }
+        }
+        if (fl) {
+            --i; fl = false; continue;
+        }
+        cout << temp << endl;
+        nums.push_back(temp);
+        tests.push_back(*new test(temp));
     }
 }
