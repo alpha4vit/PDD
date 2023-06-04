@@ -130,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="barElement.cpp" />
     <ClCompile Include="image.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="PDD.cpp" />
@@ -137,6 +138,7 @@
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="barElement.h" />
     <ClInclude Include="image.h" />
     <ClInclude Include="includes.h" />
     <ClInclude Include="Object.h" />

@@ -18,6 +18,7 @@ void signs(RenderWindow& app, Music& music);
 void markup(RenderWindow& app, Music& music);
 void tests(RenderWindow& app, Music& music);
 void getNumTests(vector<test>& tests);
+vector<RectangleShape> genProgressBar(vector<test>& tests);
 
 
 
@@ -696,6 +697,7 @@ void tests(RenderWindow& app, Music& music) {
     float scrollSpeed = 20.0f;
     vector<test> tests;
     getNumTests(tests);
+    vector<RectangleShape> bar = genProgressBar(tests);
 
     float windowWidth = static_cast<float>(app.getSize().x);
     float windowHeight = static_cast<float>(app.getSize().y);
@@ -744,6 +746,12 @@ void tests(RenderWindow& app, Music& music) {
         app.clear();
         app.draw(bg.sprite);
 
+        for (int i = 0; i < bar.size(); ++i) {
+            if (tests[i].state) {
+                bar[i].setFillColor(Color::Green);
+            }
+            app.draw(bar[i]);
+        }
 
         if (homeButton.isMouseOver(app)) {
             Vector2f tempPos = homeButton.sprite.getPosition();
@@ -765,31 +773,40 @@ void tests(RenderWindow& app, Music& music) {
         app.draw(rightArrow.sprite);
         app.draw(leftArrow.sprite);
 
-        if (Mouse::isButtonPressed(Mouse::Left)) {
-            if (homeButton.isMouseOver(app)) {
-                mainMenu(app, music);
-            }
+        if (Mouse::isButtonPressed(Mouse::Left) && isKeyButtonReleased) {
+            
         }
 
         app.draw(tests[index].task.sprite);
         showCaptures(app, tests[index].answers, *new Vector2f(100, 500), 3);
-        if (Keyboard::isKeyPressed(Keyboard::Right) && index<10) {
-            ++index;
-        }
+        
         if (Mouse::isButtonPressed(Mouse::Left) && isKeyButtonReleased) {
-            for (int i = 0; i < tests[index].answers.size(); ++i) {
-                if (isMouseOver(app, tests[index].answers[i])) {
-                    if (tests[index].answers[i].text.getString() == tests[index].correctAnswer) {
-                        tests[index].state = true;
-                        ++index;
-                        cout << true << endl;
+            if (homeButton.isMouseOver(app)) {
+                mainMenu(app, music);
+            }
+            else if (rightArrow.isMouseOver(app) && index < 9) {
+                index++;
+                cout << index << endl;
+            }
+            else if (leftArrow.isMouseOver(app) && index > 0) {
+                index--;
+                cout << index << endl;
+            }
+            else {
+                for (int i = 0; i < tests[index].answers.size(); ++i) {
+                    if (isMouseOver(app, tests[index].answers[i])) {
+                        if (tests[index].answers[i].text.getString() == tests[index].correctAnswer) {
+                            tests[index].state = true;
+                            ++index;
+                            cout << true << endl;
+                        }
+                        else {
+                            cout << false << endl;
+                            ++index;
+                        }
                     }
-                    else {
-                        cout << false << endl;
-                        ++index;
-                    }
-                }
 
+                }
             }
             isKeyButtonReleased = false;
         }
@@ -817,6 +834,20 @@ void getNumTests(vector<test>& tests) {
         nums.push_back(temp);
         tests.push_back(*new test(temp));
     }
+}
+
+vector<RectangleShape> genProgressBar(vector<test>& tests) {
+    vector<RectangleShape> bar;
+    int x = 241, y = 0, step = 50;
+    for (int i = 0; i < tests.size(); ++i) {
+        RectangleShape rect;
+        rect.setPosition(x, y);
+        rect.setSize(*new Vector2f(step, step));
+        rect.setFillColor(Color::Red);
+        bar.push_back(rect);
+        x += 51;
+    }
+    return bar;
 }
 
 
