@@ -12,6 +12,7 @@ void rules(RenderWindow& app, Music& music);
 void readCaptures(vector<selfText>& captures, int type);
 void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec, int type);
 bool isMouseOver(RenderWindow& window, selfText text);
+bool isMouseOver(RenderWindow& window, RectangleShape rect);
 void mergeCapture(vector<selfText>& captures, string& temp, int x, int& y, int i);
 void showCapture(RenderWindow& window, Music& music, int captureNum, int type);
 void signs(RenderWindow& app, Music& music);
@@ -19,7 +20,8 @@ void markup(RenderWindow& app, Music& music);
 void tests(RenderWindow& app, Music& music);
 void getNumTests(vector<test>& tests);
 vector<RectangleShape> genProgressBar(vector<test>& tests);
-
+void drawBarNum(RenderWindow& window, vector<RectangleShape>& bar);
+void showCaptures(RenderWindow& app, test& test);
 
 
 int main()
@@ -485,6 +487,17 @@ bool isMouseOver(RenderWindow& window, selfText text)
         return false;
 }
 
+bool isMouseOver(RenderWindow& window, RectangleShape rect)
+{
+    Vector2i mousePos = Mouse::getPosition(window);
+    FloatRect bounds = rect.getLocalBounds();
+    if (mousePos.x > rect.getPosition().x && mousePos.x < rect.getPosition().x + bounds.width
+        && mousePos.y > rect.getPosition().y && mousePos.y < rect.getPosition().y +bounds.height)
+        return true;
+    else
+        return false;
+}
+
 void mergeCapture(vector<selfText>& captures, string& temp, int x, int& y, int i) {
     int sizeFpart = 79;
     if (i == 13)
@@ -747,10 +760,21 @@ void tests(RenderWindow& app, Music& music) {
         app.draw(bg.sprite);
 
         for (int i = 0; i < bar.size(); ++i) {
-            if (tests[i].state) {
+            if (i == index)
+                bar[i].setFillColor(Color::Black);
+            else if (tests[i].state) 
                 bar[i].setFillColor(Color::Green);
+            else
+                bar[i].setFillColor(Color::Red);
+            if (isMouseOver(app, bar[i])) {
+                if (tests[i].state)
+                    bar[i].setFillColor(Color(13, 94, 4));
+                else
+                    bar[i].setFillColor(Color(117, 10, 8));
+                app.draw(bar[i]);
             }
-            app.draw(bar[i]);
+            else
+                app.draw(bar[i]);
         }
 
         if (homeButton.isMouseOver(app)) {
@@ -773,12 +797,9 @@ void tests(RenderWindow& app, Music& music) {
         app.draw(rightArrow.sprite);
         app.draw(leftArrow.sprite);
 
-        if (Mouse::isButtonPressed(Mouse::Left) && isKeyButtonReleased) {
-            
-        }
 
         app.draw(tests[index].task.sprite);
-        showCaptures(app, tests[index].answers, *new Vector2f(100, 500), 3);
+        showCaptures(app,tests[index]);
         
         if (Mouse::isButtonPressed(Mouse::Left) && isKeyButtonReleased) {
             if (homeButton.isMouseOver(app)) {
@@ -805,11 +826,21 @@ void tests(RenderWindow& app, Music& music) {
                             ++index;
                         }
                     }
+                    if (index == 9) { // TODO при последнем вопросе сделать окно
+                       
+                    }
 
+                }
+                for (int i = 0; i < bar.size(); ++i) {
+                    if (isMouseOver(app, bar[i])) {
+                        index = i;
+                    }
                 }
             }
             isKeyButtonReleased = false;
         }
+        drawBarNum(app, bar);
+        
         
         
         app.display();
@@ -872,3 +903,45 @@ vector<RectangleShape> genProgressBar(vector<test>& tests) {
 //        mixed.push_back(tests)
 //    }
 //}
+
+
+void drawBarNum(RenderWindow& window, vector<RectangleShape>& bar) {
+    Font font;
+    font.loadFromFile("src\\Gagalin-Regular.otf");
+    Text title(L"ДОРОЖНЫЕ ПРАВИЛА", font, 72);
+    title.setPosition(*new Vector2f(180, 100));
+    title.setFillColor(Color::Black);
+    for (int i = 0; i < bar.size(); ++i) {
+        Vector2f pos = bar[i].getPosition();
+        Text number(to_string(i+1), font, 55);
+        number.setPosition(*new Vector2f(pos.x+10, pos.y-10));
+        number.setFillColor(Color::White);
+        window.draw(number);
+    }
+}
+
+
+void showCaptures(RenderWindow& app, test& test) {
+    vector<selfText> answers = test.answers;
+    Font font;
+    font.loadFromFile("src\\Gagalin-Regular.otf");
+    for (int i = 0; i < answers.size(); ++i) {
+
+        answers[i].text.setFont(font);
+        if (test.state && test.correctAnswer == answers[i].text.getString())
+            answers[i].text.setFillColor(Color::Green);
+
+
+        if (isMouseOver(app, answers[i]) && !test.state) {
+            Text temp(answers[i].text);
+            temp.setScale(1.05f, 1.05f);
+            temp.setPosition(answers[i].text.getPosition().x - 2.f, answers[i].text.getPosition().y - 2.f);
+            temp.setFillColor(Color::Blue);
+            if (test.state && test.correctAnswer == answers[i].text.getString())
+                temp.setFillColor(Color::Green);
+            app.draw(temp);
+        }
+        else
+            app.draw(answers[i].text);
+    }
+}
