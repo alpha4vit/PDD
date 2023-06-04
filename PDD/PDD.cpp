@@ -689,6 +689,8 @@ void markup(RenderWindow& app, Music& music) {
 
 void tests(RenderWindow& app, Music& music) {
     Object bg = *new Object("src\\bg\\bg3.jpg", *new Vector2f(0, 0));
+    Object rightArrow = *new Object("src\\buttons\\rightArrow.png", *new Vector2f(750, 850));
+    Object leftArrow = *new Object("src\\buttons\\leftArrow.png", *new Vector2f(50, 850));
     sf::Vector2f textPosition(10, 10);
     sf::Vector2f scrollPosition(0, 0);
     float scrollSpeed = 20.0f;
@@ -698,7 +700,7 @@ void tests(RenderWindow& app, Music& music) {
     float windowWidth = static_cast<float>(app.getSize().x);
     float windowHeight = static_cast<float>(app.getSize().y);
     int index = 0;
-
+    bool isKeyButtonReleased = true;
 
     while (app.isOpen())
     {
@@ -707,7 +709,7 @@ void tests(RenderWindow& app, Music& music) {
         {
             if (event.type == sf::Event::Closed)
                 app.close();
-            else if (event.type == sf::Event::MouseWheelScrolled)
+            if (event.type == sf::Event::MouseWheelScrolled)
             {
                 if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
                 {
@@ -723,13 +725,21 @@ void tests(RenderWindow& app, Music& music) {
                     }
                 }
             }
+            if (event.type == Event::MouseButtonReleased) {
+                if (event.key.code == Mouse::Left) {
+                    isKeyButtonReleased = true;
+                }
+            }
 
         }
 
 
 
         Object homeButton = *new Object("src\\buttons\\home.png", *new Vector2f(900, 20));
-
+        rightArrow.sprite.setScale(1.f, 1.f);
+        rightArrow.sprite.setPosition(750.f, 850.f);
+        leftArrow.sprite.setScale(1.f, 1.f);
+        leftArrow.sprite.setPosition(50.f, 850.f);
 
         app.clear();
         app.draw(bg.sprite);
@@ -737,10 +747,23 @@ void tests(RenderWindow& app, Music& music) {
 
         if (homeButton.isMouseOver(app)) {
             Vector2f tempPos = homeButton.sprite.getPosition();
-            homeButton.sprite.setScale(*new Vector2f(1.05, 1.05));
+            homeButton.sprite.setScale(*new Vector2f(1.02, 1.02));
             homeButton.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
         }
+        else if (rightArrow.isMouseOver(app)) {
+            Vector2f tempPos = rightArrow.sprite.getPosition();
+            rightArrow.sprite.setScale(*new Vector2f(1.02, 1.02));
+            rightArrow.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
+        }
+        else if (leftArrow.isMouseOver(app)) {
+            Vector2f tempPos = leftArrow.sprite.getPosition();
+            leftArrow.sprite.setScale(*new Vector2f(1.02, 1.02));
+            leftArrow.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
+        }
+
         app.draw(homeButton.sprite);
+        app.draw(rightArrow.sprite);
+        app.draw(leftArrow.sprite);
 
         if (Mouse::isButtonPressed(Mouse::Left)) {
             if (homeButton.isMouseOver(app)) {
@@ -753,6 +776,24 @@ void tests(RenderWindow& app, Music& music) {
         if (Keyboard::isKeyPressed(Keyboard::Right) && index<10) {
             ++index;
         }
+        if (Mouse::isButtonPressed(Mouse::Left) && isKeyButtonReleased) {
+            for (int i = 0; i < tests[index].answers.size(); ++i) {
+                if (isMouseOver(app, tests[index].answers[i])) {
+                    if (tests[index].answers[i].text.getString() == tests[index].correctAnswer) {
+                        tests[index].state = true;
+                        ++index;
+                        cout << true << endl;
+                    }
+                    else {
+                        cout << false << endl;
+                        ++index;
+                    }
+                }
+
+            }
+            isKeyButtonReleased = false;
+        }
+        
         
         app.display();
     }
@@ -773,8 +814,30 @@ void getNumTests(vector<test>& tests) {
         if (fl) {
             --i; fl = false; continue;
         }
-        cout << temp << endl;
         nums.push_back(temp);
         tests.push_back(*new test(temp));
     }
 }
+
+
+
+//
+//vector<selfText> mixAnswers(vector<selfText> tests) {
+//    srand(time(NULL));
+//    vector<selfText> mixed;
+//    vector<int> nums;
+//    bool fl = false;
+//    for (int i = 0; i < 3; ++i) {
+//        int index = 0 + rand() % 2;
+//        for (int j = 0; j < nums.size(); ++j) {
+//            if (nums[j] == index) {
+//                fl = true; break;
+//            }
+//        }
+//        if (fl) {
+//            --i; fl = false; continue;
+//        }
+//        nums.push_back(index);
+//        mixed.push_back(tests)
+//    }
+//}

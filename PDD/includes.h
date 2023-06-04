@@ -6,6 +6,5 @@
 #include<ctime>
 #include<Windows.h>;
 #include<fstream>
-#include<thread>
 using namespace std;
 using namespace sf;

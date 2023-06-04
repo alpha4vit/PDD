@@ -7,7 +7,7 @@ class test
 public:
 	Object task;
 	vector<selfText> answers;
-	string correctAnswer;
+	sf::String correctAnswer;
 	bool state;
 	test(int number);
 };
