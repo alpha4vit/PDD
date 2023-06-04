@@ -22,7 +22,7 @@ void getNumTests(vector<test>& tests);
 vector<RectangleShape> genProgressBar(vector<test>& tests);
 void drawBarNum(RenderWindow& window, vector<RectangleShape>& bar);
 void showCaptures(RenderWindow& app, test& test);
-
+void showResults(RenderWindow& app, vector<test>& tests, Music& music);
 
 int main()
 {
@@ -826,8 +826,9 @@ void tests(RenderWindow& app, Music& music) {
                             ++index;
                         }
                     }
-                    if (index == 9) { // TODO при последнем вопросе сделать окно
-                       
+                    if (index == 10) { // TODO при последнем вопросе сделать окно
+                        showResults(app, tests, music);
+                        return;
                     }
 
                 }
@@ -882,29 +883,6 @@ vector<RectangleShape> genProgressBar(vector<test>& tests) {
 }
 
 
-
-//
-//vector<selfText> mixAnswers(vector<selfText> tests) {
-//    srand(time(NULL));
-//    vector<selfText> mixed;
-//    vector<int> nums;
-//    bool fl = false;
-//    for (int i = 0; i < 3; ++i) {
-//        int index = 0 + rand() % 2;
-//        for (int j = 0; j < nums.size(); ++j) {
-//            if (nums[j] == index) {
-//                fl = true; break;
-//            }
-//        }
-//        if (fl) {
-//            --i; fl = false; continue;
-//        }
-//        nums.push_back(index);
-//        mixed.push_back(tests)
-//    }
-//}
-
-
 void drawBarNum(RenderWindow& window, vector<RectangleShape>& bar) {
     Font font;
     font.loadFromFile("src\\Gagalin-Regular.otf");
@@ -944,4 +922,66 @@ void showCaptures(RenderWindow& app, test& test) {
         else
             app.draw(answers[i].text);
     }
+}
+
+
+void showResults(RenderWindow& app, vector<test>& tests, Music& music) {
+    int count = 0;
+    Font font;
+    font.loadFromFile("src\\Gagalin-Regular.otf");
+    
+    for (int i = 0; i < tests.size(); ++i) {
+        if (tests[i].state)
+            ++count;
+    }
+    Object bg = *new Object("src\\bg\\bg3.jpg", *new Vector2f(0, 0));
+    
+
+    while (app.isOpen())
+    {
+        sf::Event event;
+        while (app.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                app.close();
+           
+
+        }
+
+        Text temp(L"Выйти в главное меню", font, 82);
+        temp.setPosition(75, 400);
+        temp.setFillColor(Color::Black);
+        selfText menu(temp);
+        app.clear();
+        app.draw(bg.sprite);
+
+        if (isMouseOver(app, menu)) {
+            Vector2f pos = menu.text.getPosition();
+            menu.text.setScale(1.05f, 1.05f);
+            menu.text.setPosition(pos.x - 15, pos.y - 2);
+            menu.text.setFillColor(Color::Blue);
+        }
+
+        if (Mouse::isButtonPressed(Mouse::Left)) {
+            if (isMouseOver(app, menu)) {
+                mainMenu(app, music);
+            }
+        }
+        app.draw(menu.text);
+        
+        Text text1(L"Ваш результат: ", font, 72);
+        text1.setPosition(100, 300);
+        text1.setFillColor(Color::Black);
+        app.draw(text1);
+        Text text2(to_string(count), font, 72);
+        text2.setPosition(700, 300);
+        text2.setFillColor(Color::Black);
+        app.draw(text2);
+        Text text3("/ 10 ", font, 72);
+        text3.setPosition(760, 300);
+        text3.setFillColor(Color::Black);
+        app.draw(text3);
+        app.display();
+    }
+
 }
