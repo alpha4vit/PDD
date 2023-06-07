@@ -17,12 +17,18 @@ void mergeCapture(vector<selfText>& captures, string& temp, int x, int& y, int i
 void showCapture(RenderWindow& window, Music& music, int captureNum, int type);
 void signs(RenderWindow& app, Music& music);
 void markup(RenderWindow& app, Music& music);
-void tests(RenderWindow& app, Music& music);
-void getNumTests(vector<test>& tests);
+void tests(RenderWindow& app, Music& music, int type);
+void getNumTests(vector<test>& tests, int type);
 vector<RectangleShape> genProgressBar(vector<test>& tests);
 void drawBarNum(RenderWindow& window, vector<RectangleShape>& bar);
 void showCaptures(RenderWindow& app, test& test);
 void showResults(RenderWindow& app, vector<test>& tests, Music& music);
+void showOption(RenderWindow& window, Music& music, bool& isOption, bool& isButtonReleased);
+
+enum {
+    signEnum, rulesEnum, markupEnum, generalEnum
+};
+
 
 int main()
 {
@@ -57,6 +63,8 @@ void mainMenu(RenderWindow& app, Music& music) {
     Text title(L"ДОРОЖНЫЕ ПРАВИЛА", font, 72);
     title.setPosition(*new Vector2f(180, 100));
     title.setFillColor(Color::Black);
+    bool isOption = false;
+    bool isButtonReleased = true;
 
     while (app.isOpen())
     {
@@ -65,78 +73,98 @@ void mainMenu(RenderWindow& app, Music& music) {
         {
             if (event.type == sf::Event::Closed)
                 app.close();
-        }
 
-
-        buttonRules.sprite.setPosition(*new Vector2f(250, 300));
-        buttonRules.sprite.setScale(*new Vector2f(1, 1));
-        buttonSigns.sprite.setScale(*new Vector2f(1, 1));
-        buttonSigns.sprite.setPosition(*new Vector2f(250, 470));
-        buttonTest.sprite.setScale(*new Vector2f(1, 1));
-        buttonTest.sprite.setPosition(*new Vector2f(250, 640));
-        buttonMarkup.sprite.setScale(*new Vector2f(1, 1));
-        buttonMarkup.sprite.setPosition(*new Vector2f(250, 810));
-        Object buttonSettings = *new Object("src\\buttons\\settings.png", *new Vector2f(900, 20));
-
-        app.clear();
-        app.draw(bg.sprite);
-        app.draw(title);
-
-        if (buttonRules.isMouseOver(app)) {
-            Vector2f tempPos = buttonRules.sprite.getPosition();
-            buttonRules.sprite.setScale(*new Vector2f(1.05, 1.05));
-            buttonRules.sprite.setPosition(*new Vector2f(tempPos.x - 12, tempPos.y - 5));
-        }
-        app.draw(buttonRules.sprite);
-
-        if (buttonTest.isMouseOver(app)) {
-            Vector2f tempPos = buttonTest.sprite.getPosition();
-            buttonTest.sprite.setScale(*new Vector2f(1.05, 1.05));
-            buttonTest.sprite.setPosition(*new Vector2f(tempPos.x - 12, tempPos.y - 5));
-        }
-        app.draw(buttonTest.sprite);
-
-        if (buttonSigns.isMouseOver(app)) {
-            Vector2f tempPos = buttonSigns.sprite.getPosition();
-            buttonSigns.sprite.setScale(*new Vector2f(1.05, 1.05));
-            buttonSigns.sprite.setPosition(*new Vector2f(tempPos.x - 12, tempPos.y - 5));
-        }
-        app.draw(buttonSigns.sprite);
-
-        if (buttonMarkup.isMouseOver(app)) {
-            Vector2f tempPos = buttonMarkup.sprite.getPosition();
-            buttonMarkup.sprite.setScale(*new Vector2f(1.05, 1.05));
-            buttonMarkup.sprite.setPosition(*new Vector2f(tempPos.x - 12, tempPos.y - 5));
-        }
-        if (buttonSettings.isMouseOver(app)) {
-            Vector2f tempPos = buttonSettings.sprite.getPosition();
-            buttonSettings.sprite.setScale(*new Vector2f(1.05, 1.05));
-            buttonSettings.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
-        }
-        app.draw(buttonSettings.sprite);
-        app.draw(buttonMarkup.sprite);
-
-        if (Mouse::isButtonPressed(Mouse::Left)) {
-            if (buttonRules.isMouseOver(app)) {
-                rules(app, music);
+            if (event.type == sf::Event::MouseButtonReleased) {
+                if (event.key.code == Mouse::Left) {
+                    isButtonReleased = true;
+                }
             }
-            else if (buttonTest.isMouseOver(app)) {
-                tests(app, music);
+
+
+            buttonRules.sprite.setPosition(*new Vector2f(250, 300));
+            buttonRules.sprite.setScale(*new Vector2f(1, 1));
+            buttonSigns.sprite.setScale(*new Vector2f(1, 1));
+            buttonSigns.sprite.setPosition(*new Vector2f(250, 470));
+            buttonTest.sprite.setScale(*new Vector2f(1, 1));
+            buttonTest.sprite.setPosition(*new Vector2f(250, 640));
+            buttonMarkup.sprite.setScale(*new Vector2f(1, 1));
+            buttonMarkup.sprite.setPosition(*new Vector2f(250, 810));
+            Object buttonSettings = *new Object("src\\buttons\\settings.png", *new Vector2f(900, 20));
+
+
+            app.clear();
+            app.draw(bg.sprite);
+            app.draw(title);
+
+
+            if (!isOption) {
+                if (buttonRules.isMouseOver(app)) {
+                    Vector2f tempPos = buttonRules.sprite.getPosition();
+                    buttonRules.sprite.setScale(*new Vector2f(1.05, 1.05));
+                    buttonRules.sprite.setPosition(*new Vector2f(tempPos.x - 12, tempPos.y - 5));
+                }
+
+
+                if (buttonTest.isMouseOver(app)) {
+                    Vector2f tempPos = buttonTest.sprite.getPosition();
+                    buttonTest.sprite.setScale(*new Vector2f(1.05, 1.05));
+                    buttonTest.sprite.setPosition(*new Vector2f(tempPos.x - 12, tempPos.y - 5));
+                }
+
+
+                if (buttonSigns.isMouseOver(app)) {
+                    Vector2f tempPos = buttonSigns.sprite.getPosition();
+                    buttonSigns.sprite.setScale(*new Vector2f(1.05, 1.05));
+                    buttonSigns.sprite.setPosition(*new Vector2f(tempPos.x - 12, tempPos.y - 5));
+                }
+
+
+                if (buttonMarkup.isMouseOver(app)) {
+                    Vector2f tempPos = buttonMarkup.sprite.getPosition();
+                    buttonMarkup.sprite.setScale(*new Vector2f(1.05, 1.05));
+                    buttonMarkup.sprite.setPosition(*new Vector2f(tempPos.x - 12, tempPos.y - 5));
+                }
+                if (buttonSettings.isMouseOver(app)) {
+                    Vector2f tempPos = buttonSettings.sprite.getPosition();
+                    buttonSettings.sprite.setScale(*new Vector2f(1.05, 1.05));
+                    buttonSettings.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
+                }
+
+                if (Mouse::isButtonPressed(Mouse::Left) && isButtonReleased) {
+                    if (buttonRules.isMouseOver(app)) {
+                        rules(app, music);
+                    }
+                    else if (buttonTest.isMouseOver(app)) {
+                        isOption = true;
+                    }
+                    else if (buttonSigns.isMouseOver(app)) {
+                        signs(app, music);
+                    }
+                    else if (buttonMarkup.isMouseOver(app)) {
+                        markup(app, music);
+                    }
+                    else if (buttonSettings.isMouseOver(app)) {
+                        settings(app, music);
+                    }
+                    isButtonReleased = false;
+                }
             }
-            else if (buttonSigns.isMouseOver(app)) {
-                signs(app, music);
+
+            app.draw(buttonTest.sprite);
+            app.draw(buttonSigns.sprite);
+            app.draw(buttonRules.sprite);
+            app.draw(buttonSettings.sprite);
+            app.draw(buttonMarkup.sprite);
+
+            if (isOption) {
+                showOption(app, music, isOption, isButtonReleased);
             }
-            else if (buttonMarkup.isMouseOver(app)) {
-                markup(app, music);
-            }
-            else if (buttonSettings.isMouseOver(app)) {
-                settings(app, music);
-            }
+
+
+            app.display();
         }
 
-        app.display();
     }
-
 }
 
 
@@ -356,6 +384,76 @@ void signs(RenderWindow& app, Music& music) {
 }
 
 
+void showOption(RenderWindow& window, Music& music, bool& isOption, bool& isButtonReleased) {
+    RectangleShape rect;
+    rect.setPosition(0, 0);
+    rect.setSize(*new Vector2f(1000, 1000));
+    rect.setFillColor(Color(255, 255, 255, 225));
+    window.draw(rect);
+    Font font;
+    font.loadFromFile("src\\Gagalin-Regular.otf");
+    Text signTest(L"ПРОЙТИ ТЕСТ ПО ЗНАКАМ", font, 72);
+    signTest.setPosition(120, 150);
+    signTest.setFillColor(Color::Black);
+    Text rulesTest(L"ПРОЙТИ ТЕСТ ПО ПДД", font, 72);
+    rulesTest.setPosition(170, 350);
+    rulesTest.setFillColor(Color::Black);
+    Text generalTest(L"ПРОЙТИ ОБЩИЙ ТЕСТ", font, 72);
+    generalTest.setPosition(170, 750);
+    generalTest.setFillColor(Color::Black);
+    Text markupTest(L"ПРОЙТИ ТЕСТ ПО РАЗМЕТКЕ", font, 72);
+    markupTest.setPosition(80, 550);
+    markupTest.setFillColor(Color::Black);
+    if (isMouseOver(window, signTest)) {
+        Vector2f pos = signTest.getPosition();
+        signTest.setFillColor(Color::Blue);
+        signTest.setScale(1.05f, 1.05f);
+        signTest.setPosition(pos.x - 2, pos.y - 2);
+    }
+    else if (isMouseOver(window, rulesTest)) {
+        Vector2f pos = rulesTest.getPosition();
+        rulesTest.setFillColor(Color::Blue);
+        rulesTest.setScale(1.05f, 1.05f);
+        rulesTest.setPosition(pos.x - 2, pos.y - 2);
+    }
+    else if (isMouseOver(window, generalTest)) {
+        Vector2f pos = generalTest.getPosition();
+        generalTest.setFillColor(Color::Blue);
+        generalTest.setScale(1.05f, 1.05f);
+        generalTest.setPosition(pos.x - 2, pos.y - 2);
+    }
+    else if (isMouseOver(window, markupTest)) {
+        Vector2f pos = markupTest.getPosition();
+        markupTest.setFillColor(Color::Blue);
+        markupTest.setScale(1.05f, 1.05f);
+        markupTest.setPosition(pos.x - 2, pos.y - 2);
+    }
+
+    if (Mouse::isButtonPressed(Mouse::Left) && isButtonReleased) {
+        if (isMouseOver(window, signTest)) {
+            tests(window, music, signEnum);
+        }
+        else if (isMouseOver(window, rulesTest)) {
+            tests(window, music, rulesEnum);
+        }
+        else if (isMouseOver(window, generalTest)) {
+            tests(window, music, generalEnum);
+        }
+        else if (isMouseOver(window, markupTest)) {
+            tests(window, music, markupEnum);
+        }
+        else {
+            isOption = false;
+        }
+    }
+    window.draw(signTest);
+    window.draw(rulesTest);
+    window.draw(generalTest);
+    window.draw(markupTest);
+
+
+}
+
 void showCaptures(RenderWindow& app, vector<selfText>& captures, Vector2f& vec, int type) {
 
     Font font;
@@ -543,7 +641,6 @@ void showCapture(RenderWindow& window, Music& music, int captureNum, int type) {
             {
                 if (event.mouseWheelScroll.delta < 0)
                 {
-                    cout << "вниз " << endl;
                     if (rulesPic[rulesPic.size() - 1].sprite.getPosition().y + rulesPic[rulesPic.size() - 1].sprite.getLocalBounds().height > 980) {
                         for (int i = 0; i < rulesPic.size(); ++i) {
                             Vector2f pos = rulesPic[i].sprite.getPosition();
@@ -553,14 +650,12 @@ void showCapture(RenderWindow& window, Music& music, int captureNum, int type) {
                 }
                 else if (event.mouseWheelScroll.delta > 0)
                 {
-                    cout << "вверх " << endl;
                     if (rulesPic[0].sprite.getPosition().y < 20) {
                         for (int i = 0; i < rulesPic.size(); ++i) {
                             Vector2f pos = rulesPic[i].sprite.getPosition();
                             rulesPic[i].sprite.setPosition(*new Vector2f(pos.x, pos.y + 20));
                         }
                     }
-                    cout << "dsadsa";
                 }
             }
         }
@@ -701,7 +796,8 @@ void markup(RenderWindow& app, Music& music) {
 }
 
 
-void tests(RenderWindow& app, Music& music) {
+
+void tests(RenderWindow& app, Music& music, int type) {
     Object bg = *new Object("src\\bg\\bg3.jpg", *new Vector2f(0, 0));
     Object rightArrow = *new Object("src\\buttons\\rightArrow.png", *new Vector2f(750, 850));
     Object leftArrow = *new Object("src\\buttons\\leftArrow.png", *new Vector2f(50, 850));
@@ -709,7 +805,7 @@ void tests(RenderWindow& app, Music& music) {
     sf::Vector2f scrollPosition(0, 0);
     float scrollSpeed = 20.0f;
     vector<test> tests;
-    getNumTests(tests);
+    getNumTests(tests, type);
     vector<RectangleShape> bar = genProgressBar(tests);
 
     float windowWidth = static_cast<float>(app.getSize().x);
@@ -724,22 +820,8 @@ void tests(RenderWindow& app, Music& music) {
         {
             if (event.type == sf::Event::Closed)
                 app.close();
-            if (event.type == sf::Event::MouseWheelScrolled)
-            {
-                if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
-                {
-                    if (event.mouseWheelScroll.delta < 0)
-                    {
-                        cout << "вниз " << endl;
-                        
-                    }
-                    else if (event.mouseWheelScroll.delta > 0)
-                    {
-                        cout << "вверх " << endl;
-                        
-                    }
-                }
-            }
+            
+
             if (event.type == Event::MouseButtonReleased) {
                 if (event.key.code == Mouse::Left) {
                     isKeyButtonReleased = true;
@@ -849,10 +931,11 @@ void tests(RenderWindow& app, Music& music) {
 }
 
 
-void getNumTests(vector<test>& tests) {
+void getNumTests(vector<test>& tests, int type) {
     srand(time(NULL));
     vector<int> nums;
     bool fl = false;
+    int tempT = type;
     for (int i = 0; i < 10; ++i) {
         int temp = 1 + rand() % 14;
         for (int j = 0; j < nums.size(); ++j) {
@@ -863,8 +946,12 @@ void getNumTests(vector<test>& tests) {
         if (fl) {
             --i; fl = false; continue;
         }
+        if (type == 3) {
+            tempT = 1 + rand() % 3;
+            --tempT;
+        }
         nums.push_back(temp);
-        tests.push_back(*new test(temp));
+        tests.push_back(*new test(temp, tempT));
     }
 }
 

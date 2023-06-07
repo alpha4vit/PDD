@@ -9,5 +9,5 @@ public:
 	vector<selfText> answers;
 	sf::String correctAnswer;
 	bool state;
-	test(int number);
+	test(int number, int type);
 };

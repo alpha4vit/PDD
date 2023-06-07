@@ -1,10 +1,9 @@
 
 #include "test.h"
-vector<selfText> mixAnswers(vector<selfText> vec);
-test::test(int number)
-{
-	this->task = *new Object("src\\tests\\" + to_string(number) + "\\task.png", *new Vector2f(100, 100));
 
+test::test(int number, int type)
+{
+	this->task = *new Object("src\\tests\\" + to_string(type+1) + "\\" + to_string(number) + "\\task.png", *new Vector2f(100, 100));
 	int x = 100;
 	int y = 500;
 	Font font;
