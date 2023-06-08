@@ -10,11 +10,12 @@ test::test(int number, int type)
 	font.loadFromFile("src\\Gagalin-Regular.otf");
 	fstream file;
 	file.imbue(std::locale(""));
-	file.open("src\\tests\\" + to_string(number) + "\\answers.txt");
+	file.open("src\\tests\\" + to_string(type + 1) + "\\" + to_string(number) + "\\answers.txt");
 	vector<selfText> tempVec;
 	for (int i = 0; i < 4; ++i) {
 		string temp;
 		getline(file, temp);
+		cout << temp << endl;
 		if (i == 0) {
 			this->correctAnswer = sf::String::fromUtf8(temp.begin(), temp.end()); continue;
 		}
