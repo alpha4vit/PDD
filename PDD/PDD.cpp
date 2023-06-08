@@ -932,12 +932,15 @@ void tests(RenderWindow& app, Music& music, int type) {
 
 
 void getNumTests(vector<test>& tests, int type) {
+    int questNum = 14;
+    if (type == 1)
+        questNum = 13;
     srand(time(NULL));
     vector<int> nums;
     bool fl = false;
     int tempT = type;
     for (int i = 0; i < 10; ++i) {
-        int temp = 1 + rand() % 14;
+        int temp = 1 + rand() % questNum;
         for (int j = 0; j < nums.size(); ++j) {
             if (nums[j] == temp) {
                 fl = true; break;
