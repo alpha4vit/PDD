@@ -37,7 +37,9 @@ int main()
     SetConsoleOutputCP(1251);
     Music music;
     sf::RenderWindow app(sf::VideoMode(1000, 1000), L"Дорожные правила");
+    int volume = readVolumeFromFile();
     music.openFromFile("src\\sounds\\backsound.ogg");
+    music.setVolume(volume);
     music.play();
     music.setLoop(true);
     // setting icon
@@ -171,12 +173,13 @@ void mainMenu(RenderWindow& app, Music& music) {
 void settings(RenderWindow& window, Music& music) {
 
     Object bg = *new Object("src\\bg\\bg3.jpg", *new Vector2f(0, 0));
-    
     Font font;
     font.loadFromFile("src\\Gagalin-Regular.otf");
     Text title(L"НАСТРОЙКИ", font, 92);
     title.setPosition(*new Vector2f(280, 40));
     title.setFillColor(Color::Black);
+    bool isButtonRealesed = true;
+    bool isKeyRealesed = true;
     while (window.isOpen())
     {
         sf::Event event;
@@ -184,10 +187,24 @@ void settings(RenderWindow& window, Music& music) {
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (event.type == Event::MouseButtonReleased)
+                isButtonRealesed = true;
         }
 
+        int volume = readVolumeFromFile();
+        cout << volume << endl;
         Object homeButton = *new Object("src\\buttons\\home.png", *new Vector2f(900, 20));
- 
+        Object leftArrow = *new Object("src\\buttons\\arrowHeadLeft1.png", *new Vector2f(131, 298));
+        Object rightArrow = *new Object("src\\buttons\\arrowHeadRight1.png", *new Vector2f(852, 298));
+        RectangleShape lineMain;
+        lineMain.setFillColor(Color(150, 148, 141));
+        RectangleShape lineCur;
+        lineCur.setFillColor(Color::Black);
+        lineMain.setPosition(150, 300);
+        lineCur.setPosition(150, 300);
+        lineMain.setSize(*new Vector2f(700, 21));
+        lineCur.setSize(*new Vector2f(volume * 7, 21));
+        
 
         window.clear();
         if (homeButton.isMouseOver(window)) {
@@ -196,15 +213,31 @@ void settings(RenderWindow& window, Music& music) {
             homeButton.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
         }
 
-        if (Mouse::isButtonPressed(Mouse::Left)) {
+        if (Mouse::isButtonPressed(Mouse::Left) && isButtonRealesed) {
             if (homeButton.isMouseOver(window)) {
                 mainMenu(window, music);
+                isButtonRealesed = false;
             }
+            else if (rightArrow.isMouseOver(window)) {
+                if (volume + 10 <= 100)
+                    writeVolumeToFile(volume + 10);
+                isButtonRealesed = false;
+            }
+            else if (leftArrow.isMouseOver(window)) {
+                if (volume - 10 >= 0)
+                    writeVolumeToFile(volume - 10);
+                isButtonRealesed = false;
+            }
+            
         }
 
         window.draw(bg.sprite);
         window.draw(title);
         window.draw(homeButton.sprite);
+        window.draw(lineMain);
+        window.draw(lineCur);
+        window.draw(leftArrow.sprite);
+        window.draw(rightArrow.sprite);
 
 
         window.display();
