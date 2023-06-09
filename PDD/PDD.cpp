@@ -204,6 +204,9 @@ void settings(RenderWindow& window, Music& music) {
         lineCur.setPosition(150, 300);
         lineMain.setSize(*new Vector2f(700, 21));
         lineCur.setSize(*new Vector2f(volume * 7, 21));
+        Text vol(to_string(volume), font, 32);
+        vol.setPosition(487, 260);
+        vol.setFillColor(Color::Black);
         
 
         window.clear();
@@ -212,7 +215,16 @@ void settings(RenderWindow& window, Music& music) {
             homeButton.sprite.setScale(*new Vector2f(1.05, 1.05));
             homeButton.sprite.setPosition(*new Vector2f(tempPos.x - 2, tempPos.y - 2));
         }
-
+        if (rightArrow.isMouseOver(window)) {
+            Vector2f tempPos = rightArrow.sprite.getPosition();
+            rightArrow.sprite.setScale(*new Vector2f(1.05, 1.05));
+            rightArrow.sprite.setPosition(*new Vector2f(tempPos.x - 1, tempPos.y - 1));
+        }
+        if (leftArrow.isMouseOver(window)) {
+            Vector2f tempPos = leftArrow.sprite.getPosition();
+            leftArrow.sprite.setScale(*new Vector2f(1.05, 1.05));
+            leftArrow.sprite.setPosition(*new Vector2f(tempPos.x - 1, tempPos.y - 1));
+        }
         if (Mouse::isButtonPressed(Mouse::Left) && isButtonRealesed) {
             if (homeButton.isMouseOver(window)) {
                 mainMenu(window, music);
@@ -230,7 +242,7 @@ void settings(RenderWindow& window, Music& music) {
             }
             
         }
-
+        music.setVolume(volume);
         window.draw(bg.sprite);
         window.draw(title);
         window.draw(homeButton.sprite);
@@ -238,7 +250,7 @@ void settings(RenderWindow& window, Music& music) {
         window.draw(lineCur);
         window.draw(leftArrow.sprite);
         window.draw(rightArrow.sprite);
-
+        window.draw(vol);
 
         window.display();
     }
